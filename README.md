@@ -110,7 +110,7 @@ Modul ini telah berhasil diupdate dan kompatibel dengan **Odoo 19.0**. Semua kom
 
 ## Struktur Modul
 
-```
+```text
 pks_pabrik/
 ├── __init__.py
 ├── __manifest__.py
@@ -158,7 +158,7 @@ pks_pabrik/
     ├── nginx.conf
     ├── odoo.conf
     └── .env.example
-```text
+```
 
 ## Instalasi
 
@@ -383,13 +383,13 @@ docker-compose --profile backup up -d
 
 #### Database Connection Error
 
-```
+```text
 Pastikan PostgreSQL berjalan dan kredensial benar di odoo.conf
 ```
 
 #### Module Not Found
 
-```
+```text
 Pastikan addons_path di odoo.conf mencakup direktori pks_pabrik
 ```
 
