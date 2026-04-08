@@ -15,6 +15,7 @@ Modul **PKS Pabrik** adalah sistem manajemen pabrik kelapa sawit (Palm Oil Mill)
 Modul ini telah berhasil diupdate dan kompatibel dengan **Odoo 19.0**. Semua komponen telah diverifikasi dan diuji untuk kompatibilitas dengan versi terbaru Odoo.
 
 ### 📋 Dokumentasi Migration
+
 - **ODOO19_EXECUTIVE_SUMMARY.md** - Ringkasan eksekutif lengkap
 - **ODOO19_MIGRATION_AUDIT.md** - Audit detail semua komponen
 - **ODOO19_MIGRATION_CHECKLIST.md** - Checklist implementasi
@@ -22,6 +23,7 @@ Modul ini telah berhasil diupdate dan kompatibel dengan **Odoo 19.0**. Semua kom
 - **ODOO19_CRITICAL_FIXES.md** - Semua perbaikan kode
 
 ### ✅ Yang Telah Diperbaiki
+
 - 11 critical syntax errors diperbaiki
 - Version manifest diupdate ke 19.0.1.0.0
 - Semua field definitions diperbaiki
@@ -30,6 +32,7 @@ Modul ini telah berhasil diupdate dan kompatibel dengan **Odoo 19.0**. Semua kom
 - Portal functionality dikonfirmasi
 
 ### 🟡 Catatan Penting
+
 - Pastikan menggunakan Odoo 19.0 atau lebih baru
 - Semua dependencies telah diverifikasi kompatibilitas
 - Module siap untuk production deployment
@@ -37,24 +40,28 @@ Modul ini telah berhasil diupdate dan kompatibel dengan **Odoo 19.0**. Semua kom
 ## Fitur Utama
 
 ### 1. Manajemen Timbangan (Weighbridge) dengan State Machine
+
 - **State Machine**: Draft → Weighing In → Waiting Unload → Weighing Out → Done
 - **RFID Integration**: Scan kartu RFID untuk identifikasi truk otomatis
 - **Dual Weighing**: Timbang masuk dan timbang keluar dengan perhitungan netto otomatis
 - **Slip Timbang**: Cetak slip timbangan dalam format PDF
 
 ### 2. Manajemen Supplier dengan Portal
+
 - **Portal Supplier**: Supplier dapat mengakses portal untuk melihat history pengiriman
 - **Verifikasi Supplier**: Alur verifikasi supplier (Draft → Pending → Verified/Rejected)
 - **Manajemen Kebun**: Pengelolaan data kebun per supplier
 - **Statistik Supplier**: Total pengiriman, total berat, rata-rata kualitas
 
 ### 3. Manajemen Truk dengan RFID
+
 - **RFID Tracking**: Setiap truk memiliki RFID tag unik
 - **Real-time Status**: Monitoring status truk (Available, In Weighbridge, In Mill, Maintenance)
 - **GPS Integration**: Tracking lokasi truk (opsional)
 - **Maintenance Schedule**: Penjadwalan dan tracking maintenance truk
 
 ### 4. Quality Control dengan Grading Otomatis
+
 - **Parameter Quality**:
   - Kadar Air (Moisture Content)
   - Kotoran (Impurities)
@@ -67,6 +74,7 @@ Modul ini telah berhasil diupdate dan kompatibel dengan **Odoo 19.0**. Semua kom
 - **Foto Sampling**: Upload foto sampel TBS
 
 ### 5. LHP (Laporan Harian Pabrik) dengan OER/KER
+
 - **OER (Oil Extraction Rate)**: Persentase ekstraksi minyak dari TBS
 - **KER (Kernel Extraction Rate)**: Persentase ekstraksi kernel dari TBS
 - **Input TBS**: Pencatatan TBS masuk (Internal, Eksternal, Plasma)
@@ -75,6 +83,7 @@ Modul ini telah berhasil diupdate dan kompatibel dengan **Odoo 19.0**. Semua kom
 - **Approval Workflow**: Draft → Confirmed → Approved → Done
 
 ### 6. REST API dengan Authentication
+
 - **Authentication**: Basic Auth dan API Token
 - **Endpoints**:
   - `/api/v1/pks/suppliers` - CRUD Supplier
@@ -86,6 +95,7 @@ Modul ini telah berhasil diupdate dan kompatibel dengan **Odoo 19.0**. Semua kom
 - **Rate Limiting**: Proteksi terhadap abuse
 
 ### 7. OWL Component Mobile-Responsive untuk Kiosk Timbangan
+
 - **Kiosk Mode**: Interface khusus untuk timbangan
 - **RFID Scan**: Input via RFID scanner
 - **Touch-friendly**: Optimized untuk layar sentuh
@@ -93,6 +103,7 @@ Modul ini telah berhasil diupdate dan kompatibel dengan **Odoo 19.0**. Semua kom
 - **Auto-logout**: Session timeout untuk keamanan
 
 ### 8. QWeb Reports
+
 - **Slip Timbang**: Format PDF untuk slip timbangan
 - **Laporan LHP**: Format PDF untuk laporan harian pabrik
 - **Customizable**: Template dapat disesuaikan
@@ -147,11 +158,12 @@ pks_pabrik/
     ├── nginx.conf
     ├── odoo.conf
     └── .env.example
-```
+```text
 
 ## Instalasi
 
 ### Prerequisites
+
 - Odoo 19.0
 - PostgreSQL 13+
 - Python 3.10+
@@ -160,47 +172,54 @@ pks_pabrik/
 ### Instalasi Manual
 
 1. Clone repository ke direktori addons Odoo:
+
 ```bash
 cd /path/to/odoo/addons
 git clone https://github.com/hdamanik98/pks_pabrik.git
 ```
 
-2. Install dependencies Python:
+1. Install dependencies Python:
+
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Update app list di Odoo dan install modul **PKS Pabrik**.
+1. Update app list di Odoo dan install modul **PKS Pabrik**.
 
 ### Instalasi dengan Docker
 
 1. Copy dan sesuaikan environment variables:
+
 ```bash
 cd docker
 cp .env.example .env
 # Edit .env sesuai konfigurasi Anda
 ```
 
-2. Build dan jalankan container:
+1. Build dan jalankan container:
+
 ```bash
 docker-compose up -d
 ```
 
-3. Akses Odoo di `http://localhost:8069`
+1. Akses Odoo di `http://localhost:8069`
 
 ## Konfigurasi
 
 ### 1. Buat Database Baru
+
 - Database Name: `pks_production`
 - Email: admin
 - Password: (sesuai konfigurasi)
 
 ### 2. Install Modul PKS Pabrik
+
 - Buka Apps menu
 - Cari "PKS Pabrik"
 - Klik Install
 
 ### 3. Konfigurasi User Groups
+
 - **PKS Manager**: Akses penuh ke semua fitur
 - **PKS Supervisor**: Mengelola LHP dan quality
 - **PKS User**: Operasional timbangan
@@ -209,6 +228,7 @@ docker-compose up -d
 - **PKS Supplier Portal**: Akses portal untuk supplier
 
 ### 4. Konfigurasi Grade Quality
+
 - Buka menu: Quality Control → Konfigurasi Grade
 - Sesuaikan range parameter untuk setiap grade (A, B, C, D, E)
 - Atur deduction factor untuk setiap grade
@@ -236,6 +256,7 @@ docker-compose up -d
 ## REST API Usage
 
 ### Authentication
+
 ```bash
 # Basic Auth
 curl -u username:password http://localhost:8069/api/v1/pks/suppliers
@@ -247,11 +268,13 @@ curl -H "X-API-Token: your_token" http://localhost:8069/api/v1/pks/suppliers
 ### Contoh Endpoints
 
 #### Get Suppliers
+
 ```bash
 curl -u admin:admin http://localhost:8069/api/v1/pks/suppliers
 ```
 
 #### Create Weighbridge Ticket
+
 ```bash
 curl -X POST -u admin:admin \
   -H "Content-Type: application/json" \
@@ -260,6 +283,7 @@ curl -X POST -u admin:admin \
 ```
 
 #### Weigh In
+
 ```bash
 curl -X POST -u admin:admin \
   -H "Content-Type: application/json" \
@@ -270,6 +294,7 @@ curl -X POST -u admin:admin \
 ## Testing
 
 ### Run Unit Tests
+
 ```bash
 # Test semua modul PKS
 ./odoo-bin -i pks_pabrik --test-enable --stop-after-init
@@ -279,6 +304,7 @@ curl -X POST -u admin:admin \
 ```
 
 ### Test Coverage
+
 ```bash
 coverage run --source=addons/pks_pabrik ./odoo-bin -i pks_pabrik --test-enable --stop-after-init
 coverage report
@@ -290,12 +316,14 @@ coverage html
 Setelah update ke Odoo 19, pastikan untuk menjalankan testing komprehensif:
 
 #### 1. Installation Test
+
 ```bash
 # Install module pada Odoo 19
 ./odoo-bin -d test_db -i pks_pabrik --stop-after-init
 ```
 
 #### 2. Feature Verification
+
 - ✅ Model installation (weighbridge, supplier, truck, quality, lhp)
 - ✅ View rendering (forms, trees, searches)
 - ✅ API endpoints (/api/v1/pks/*)
@@ -305,18 +333,22 @@ Setelah update ke Odoo 19, pastikan untuk menjalankan testing komprehensif:
 - ✅ State machine workflows
 
 #### 3. Integration Testing
+
 - ✅ End-to-end weighbridge flow
 - ✅ Supplier portal access
 - ✅ LHP creation & approval
 - ✅ API authentication & CRUD operations
 
 #### 4. Performance Testing
+
 - ✅ API response time (< 500ms)
 - ✅ Report generation (< 5s)
 - ✅ Page load time (< 2s)
 
 ### Testing Documentation
+
 Untuk panduan testing lengkap, lihat:
+
 - **ODOO19_MIGRATION_CHECKLIST.md** - Checklist testing 150+ items
 - **ODOO19_TECHNICAL_GUIDE.md** - Troubleshooting testing issues
 
@@ -350,16 +382,19 @@ docker-compose --profile backup up -d
 ### Masalah Umum
 
 #### Database Connection Error
+
 ```
 Pastikan PostgreSQL berjalan dan kredensial benar di odoo.conf
 ```
 
 #### Module Not Found
+
 ```
 Pastikan addons_path di odoo.conf mencakup direktori pks_pabrik
 ```
 
 #### Permission Denied
+
 ```bash
 sudo chown -R odoo:odoo /path/to/pks_pabrik
 sudo chmod -R 755 /path/to/pks_pabrik
@@ -368,6 +403,7 @@ sudo chmod -R 755 /path/to/pks_pabrik
 ## Changelog
 
 ### Version 19.0.1.0.0 (April 8, 2026)
+
 - ✅ **Migration to Odoo 19**: Complete update from Odoo 17.0 to 19.0
 - ✅ **Critical Fixes**: Fixed 11 syntax errors in field definitions
 - ✅ **Code Quality**: All field string parameters corrected (string() → string=)
@@ -376,18 +412,21 @@ sudo chmod -R 755 /path/to/pks_pabrik
 - ✅ **Testing**: Enhanced testing procedures for Odoo 19
 
 #### Migration Details
+
 - **Fixed Files**: `pks_lhp.py` (9 fixes), `pks_quality.py` (1 fix), `__manifest__.py` (1 fix)
 - **Documentation Added**: 6 migration guide files
 - **Testing Checklist**: 150+ verification items
 - **Risk Assessment**: Medium (thorough testing recommended)
 
 #### Breaking Changes
+
 - None - All changes are backward compatible fixes
 - Module maintains all existing functionality
 - API endpoints unchanged
 - Database schema compatible
 
 #### Previous Versions
+
 - **17.0.1.0.0** (Initial release for Odoo 17.0)
 
 ## Contributing
@@ -404,13 +443,14 @@ Distributed under the LGPL-3 License. See `LICENSE` for more information.
 
 ## Support
 
-- Email: support@sawitnusantara.co.id
-- Website: https://www.sawitnusantara.co.id
-- Documentation: https://docs.sawitnusantara.co.id/pks
+- Email: <support@sawitnusantara.co.id>
+- Website: <https://www.sawitnusantara.co.id>
+- Documentation: <https://docs.sawitnusantara.co.id/pks>
 - **Odoo 19 Migration Guide**: See ODOO19_* files in repository root
 - **Technical Support**: Contact development team for migration assistance
 
 ### Migration Support Files
+
 - **ODOO19_EXECUTIVE_SUMMARY.md** - Quick overview
 - **ODOO19_MIGRATION_AUDIT.md** - Detailed audit report
 - **ODOO19_MIGRATION_CHECKLIST.md** - Step-by-step implementation
@@ -426,18 +466,22 @@ Distributed under the LGPL-3 License. See `LICENSE` for more information.
 ## Compatibility
 
 ### Supported Odoo Versions
+
 - ✅ **Odoo 19.0** (Current - Fully Tested)
 - ⚠️ **Odoo 18.x** (May work, not tested)
 - ❌ **Odoo 17.x** (Deprecated - Use version 17.0.1.0.0)
 
 ### System Requirements
+
 - **Odoo**: 19.0 or higher
 - **Python**: 3.10+
 - **PostgreSQL**: 13+
 - **Browser**: Modern browsers with JavaScript enabled
 
 ### Dependencies
+
 All Python dependencies verified compatible with Odoo 19:
+
 - pandas>=1.5.0
 - numpy>=1.24.0
 - requests>=2.28.0
