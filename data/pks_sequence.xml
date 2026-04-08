@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Sequence untuk Weighbridge -->
+        <record id="seq_pks_weighbridge" model="ir.sequence">
+            <field name="name">PKS Weighbridge</field>
+            <field name="code">pks.weighbridge</field>
+            <field name="prefix">WB/%(year)s/%(month)s/</field>
+            <field name="padding">5</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        
+        <!-- Sequence untuk Quality -->
+        <record id="seq_pks_quality" model="ir.sequence">
+            <field name="name">PKS Quality</field>
+            <field name="code">pks.quality</field>
+            <field name="prefix">QC/%(year)s/%(month)s/</field>
+            <field name="padding">5</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        
+        <!-- Sequence untuk LHP -->
+        <record id="seq_pks_lhp" model="ir.sequence">
+            <field name="name">PKS LHP</field>
+            <field name="code">pks.lhp</field>
+            <field name="prefix">LHP/%(year)s/%(month)s/</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        
+        <!-- Sequence untuk Truck Maintenance -->
+        <record id="seq_pks_truck_maintenance" model="ir.sequence">
+            <field name="name">PKS Truck Maintenance</field>
+            <field name="code">pks.truck.maintenance</field>
+            <field name="prefix">MT/%(year)s/</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

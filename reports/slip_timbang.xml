@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <!-- ============================================================
+             SLIP TIMBANG REPORT
+        ============================================================ -->
+        
+        <!-- Report Definition -->
+        <record id="action_report_slip_timbang" model="ir.actions.report">
+            <field name="name">Slip Timbang</field>
+            <field name="model">pks.weighbridge</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">pks_pabrik.report_slip_timbang</field>
+            <field name="report_file">pks_pabrik.report_slip_timbang</field>
+            <field name="print_report_name">'Slip Timbang - %s' % (object.name)</field>
+            <field name="binding_model_id" ref="model_pks_weighbridge"/>
+            <field name="binding_type">report</field>
+        </record>
+        
+        <!-- QWeb Template -->
+        <template id="report_slip_timbang">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="web.external_layout">
+                        <div class="page">
+                            <!-- Header -->
+                            <div class="row">
+                                <div class="col-12 text-center">
+                                    <h2>SLIP TIMBANG</h2>
+                                    <h3><t t-esc="o.mill_id.name or 'PKS PABRIK'"/></h3>
+                                    <hr/>
+                                </div>
+                            </div>
+                            
+                            <!-- Ticket Info -->
+                            <div class="row mt-4">
+                                <div class="col-6">
+                                    <table class="table table-borderless">
+                                        <tr>
+                                            <td><strong>No. Tiket</strong></td>
+                                            <td>: <t t-esc="o.name"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Tanggal</strong></td>
+                                            <td>: <t t-esc="o.create_date.strftime('%d/%m/%Y %H:%M:%S')"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Supplier</strong></td>
+                                            <td>: <t t-esc="o.supplier_id.name"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Kode Supplier</strong></td>
+                                            <td>: <t t-esc="o.supplier_id.code"/></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="col-6">
+                                    <table class="table table-borderless">
+                                        <tr>
+                                            <td><strong>No. Polisi</strong></td>
+                                            <td>: <t t-esc="o.truck_id.name"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>RFID</strong></td>
+                                            <td>: <t t-esc="o.rfid_tag or '-'"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Supir</strong></td>
+                                            <td>: <t t-esc="o.driver_id.name or '-'"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Jenis TBS</strong></td>
+                                            <td>: <t t-esc="o.tbs_type"/></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <!-- Weighing Data -->
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <table class="table table-bordered">
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th class="text-center">Keterangan</th>
+                                                <th class="text-center">Berat (kg)</th>
+                                                <th class="text-center">Waktu</th>
+                                                <th class="text-center">Operator</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><strong>BERAT MASUK</strong></td>
+                                                <td class="text-end"><t t-esc="'{:,.2f}'.format(o.weight_in)"/></td>
+                                                <td class="text-center"><t t-esc="o.weight_in_datetime.strftime('%d/%m/%Y %H:%M:%S') if o.weight_in_datetime else '-'"/></td>
+                                                <td class="text-center"><t t-esc="o.weight_in_operator_id.name if o.weight_in_operator_id else '-'"/></td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>BERAT KELUAR</strong></td>
+                                                <td class="text-end"><t t-esc="'{:,.2f}'.format(o.weight_out)"/></td>
+                                                <td class="text-center"><t t-esc="o.weight_out_datetime.strftime('%d/%m/%Y %H:%M:%S') if o.weight_out_datetime else '-'"/></td>
+                                                <td class="text-center"><t t-esc="o.weight_out_operator_id.name if o.weight_out_operator_id else '-'"/></td>
+                                            </tr>
+                                            <tr class="table-primary">
+                                                <td><strong>NETTO</strong></td>
+                                                <td class="text-end"><strong><t t-esc="'{:,.2f}'.format(o.netto_weight)"/></strong></td>
+                                                <td class="text-center">-</td>
+                                                <td class="text-center">-</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <!-- Quality Info -->
+                            <div class="row mt-4" t-if="o.quality_id">
+                                <div class="col-12">
+                                    <h5>Informasi Quality:</h5>
+                                    <table class="table table-bordered">
+                                        <tr>
+                                            <td><strong>No. Analisa</strong></td>
+                                            <td><t t-esc="o.quality_id.name"/></td>
+                                            <td><strong>Grade</strong></td>
+                                            <td><t t-esc="o.quality_id.final_grade or '-'"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Skor</strong></td>
+                                            <td><t t-esc="'{:,.2f}'.format(o.quality_id.grade_score)"/></td>
+                                            <td><strong>Potongan</strong></td>
+                                            <td><t t-esc="'{:,.2f}'.format(o.quality_id.weight_deduction_kg)"/> kg</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Berat Bersih Setelah Potongan</strong></td>
+                                            <td colspan="3"><strong><t t-esc="'{:,.2f}'.format(o.quality_id.net_weight_after_deduction)"/> kg</strong></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <!-- Additional Info -->
+                            <div class="row mt-4">
+                                <div class="col-6">
+                                    <p><strong>Blok Kebun:</strong> <t t-esc="o.estate_block or '-'"/></p>
+                                    <p><strong>Tanggal Panen:</strong> <t t-esc="o.harvest_date.strftime('%d/%m/%Y') if o.harvest_date else '-'"/></p>
+                                </div>
+                                <div class="col-6">
+                                    <p><strong>Status:</strong> <t t-esc="o.state"/></p>
+                                    <p><strong>Waktu Proses:</strong> <t t-esc="o.get_processing_time()"/></p>
+                                </div>
+                            </div>
+                            
+                            <!-- Notes -->
+                            <div class="row mt-4" t-if="o.notes">
+                                <div class="col-12">
+                                    <p><strong>Catatan:</strong></p>
+                                    <p><t t-esc="o.notes"/></p>
+                                </div>
+                            </div>
+                            
+                            <!-- Signatures -->
+                            <div class="row mt-5">
+                                <div class="col-4 text-center">
+                                    <p>Operator Timbang</p>
+                                    <br/><br/><br/>
+                                    <p>(<t t-esc="o.weight_in_operator_id.name if o.weight_in_operator_id else '....................'"/>)</p>
+                                </div>
+                                <div class="col-4 text-center">
+                                    <p>Supir</p>
+                                    <br/><br/><br/>
+                                    <p>(<t t-esc="o.driver_id.name if o.driver_id else '....................'"/>)</p>
+                                </div>
+                                <div class="col-4 text-center">
+                                    <p>Supervisor</p>
+                                    <br/><br/><br/>
+                                    <p>(....................)</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Footer -->
+                            <div class="row mt-5">
+                                <div class="col-12 text-center">
+                                    <hr/>
+                                    <p class="small">Dokumen ini dicetak dari sistem PKS Pabrik</p>
+                                    <p class="small">Tanggal Cetak: <t t-esc="datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')"/></p>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+        
+    </data>
+</odoo>

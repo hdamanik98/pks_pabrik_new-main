@@ -1,0 +1,40 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pks_weighbridge_user,PKS Weighbridge User,model_pks_weighbridge,group_pks_user,1,1,1,0
+access_pks_weighbridge_manager,PKS Weighbridge Manager,model_pks_weighbridge,group_pks_manager,1,1,1,1
+access_pks_weighbridge_operator,PKS Weighbridge Operator,model_pks_weighbridge,group_pks_weighbridge_operator,1,1,1,0
+access_pks_weighbridge_portal,PKS Weighbridge Portal,model_pks_weighbridge,group_pks_supplier_portal,1,0,0,0
+
+access_pks_supplier_user,PKS Supplier User,model_pks_supplier,group_pks_user,1,0,0,0
+access_pks_supplier_manager,PKS Supplier Manager,model_pks_supplier,group_pks_manager,1,1,1,1
+access_pks_supplier_portal,PKS Supplier Portal,model_pks_supplier,group_pks_supplier_portal,1,0,0,0
+
+access_pks_supplier_estate_user,PKS Supplier Estate User,model_pks_supplier_estate,group_pks_user,1,0,0,0
+access_pks_supplier_estate_manager,PKS Supplier Estate Manager,model_pks_supplier_estate,group_pks_manager,1,1,1,1
+
+access_pks_truck_user,PKS Truck User,model_pks_truck,group_pks_user,1,0,0,0
+access_pks_truck_manager,PKS Truck Manager,model_pks_truck,group_pks_manager,1,1,1,1
+access_pks_truck_operator,PKS Truck Operator,model_pks_truck,group_pks_weighbridge_operator,1,1,0,0
+
+access_pks_truck_maintenance_user,PKS Truck Maintenance User,model_pks_truck_maintenance,group_pks_user,1,0,0,0
+access_pks_truck_maintenance_manager,PKS Truck Maintenance Manager,model_pks_truck_maintenance,group_pks_manager,1,1,1,1
+
+access_pks_quality_user,PKS Quality User,model_pks_quality,group_pks_user,1,0,0,0
+access_pks_quality_qc,PKS Quality QC,model_pks_quality,group_pks_quality,1,1,1,0
+access_pks_quality_manager,PKS Quality Manager,model_pks_quality,group_pks_manager,1,1,1,1
+access_pks_quality_portal,PKS Quality Portal,model_pks_quality,group_pks_supplier_portal,1,0,0,0
+
+access_pks_quality_photo_qc,PKS Quality Photo QC,model_pks_quality_photo,group_pks_quality,1,1,1,1
+access_pks_quality_photo_user,PKS Quality Photo User,model_pks_quality_photo,group_pks_user,1,0,0,0
+
+access_pks_quality_grade_config_manager,PKS Quality Grade Config Manager,model_pks_quality_grade_config,group_pks_manager,1,1,1,1
+access_pks_quality_grade_config_user,PKS Quality Grade Config User,model_pks_quality_grade_config,group_pks_user,1,0,0,0
+
+access_pks_lhp_user,PKS LHP User,model_pks_lhp,group_pks_user,1,0,0,0
+access_pks_lhp_supervisor,PKS LHP Supervisor,model_pks_lhp,group_pks_supervisor,1,1,1,0
+access_pks_lhp_manager,PKS LHP Manager,model_pks_lhp,group_pks_manager,1,1,1,1
+
+access_pks_lhp_line_supervisor,PKS LHP Line Supervisor,model_pks_lhp_line,group_pks_supervisor,1,1,1,0
+access_pks_lhp_line_manager,PKS LHP Line Manager,model_pks_lhp_line,group_pks_manager,1,1,1,1
+
+access_pks_weighbridge_cancel_wizard,PKS Weighbridge Cancel Wizard,model_pks_weighbridge_cancel_wizard,group_pks_user,1,1,1,0
+access_pks_supplier_reject_wizard,PKS Supplier Reject Wizard,model_pks_supplier_reject_wizard,group_pks_manager,1,1,1,0

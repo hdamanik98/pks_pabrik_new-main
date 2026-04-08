@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Quality Grade Configuration -->
+        
+        <!-- Grade A - Premium -->
+        <record id="grade_config_a" model="pks.quality.grade.config">
+            <field name="name">Grade A (Premium)</field>
+            <field name="code">A</field>
+            <field name="sequence">10</field>
+            <field name="moisture_min">0</field>
+            <field name="moisture_max">20</field>
+            <field name="impurities_min">0</field>
+            <field name="impurities_max">2</field>
+            <field name="unripe_min">0</field>
+            <field name="unripe_max">5</field>
+            <field name="rotten_min">0</field>
+            <field name="rotten_max">1</field>
+            <field name="empty_bunches_min">0</field>
+            <field name="empty_bunches_max">3</field>
+            <field name="small_particles_min">0</field>
+            <field name="small_particles_max">5</field>
+            <field name="deduction_percent">0</field>
+        </record>
+        
+        <!-- Grade B - Good -->
+        <record id="grade_config_b" model="pks.quality.grade.config">
+            <field name="name">Grade B (Good)</field>
+            <field name="code">B</field>
+            <field name="sequence">20</field>
+            <field name="moisture_min">20</field>
+            <field name="moisture_max">25</field>
+            <field name="impurities_min">2</field>
+            <field name="impurities_max">5</field>
+            <field name="unripe_min">5</field>
+            <field name="unripe_max">10</field>
+            <field name="rotten_min">1</field>
+            <field name="rotten_max">3</field>
+            <field name="empty_bunches_min">3</field>
+            <field name="empty_bunches_max">6</field>
+            <field name="small_particles_min">5</field>
+            <field name="small_particles_max">10</field>
+            <field name="deduction_percent">2</field>
+        </record>
+        
+        <!-- Grade C - Average -->
+        <record id="grade_config_c" model="pks.quality.grade.config">
+            <field name="name">Grade C (Average)</field>
+            <field name="code">C</field>
+            <field name="sequence">30</field>
+            <field name="moisture_min">25</field>
+            <field name="moisture_max">30</field>
+            <field name="impurities_min">5</field>
+            <field name="impurities_max">8</field>
+            <field name="unripe_min">10</field>
+            <field name="unripe_max">15</field>
+            <field name="rotten_min">3</field>
+            <field name="rotten_max">5</field>
+            <field name="empty_bunches_min">6</field>
+            <field name="empty_bunches_max">10</field>
+            <field name="small_particles_min">10</field>
+            <field name="small_particles_max">15</field>
+            <field name="deduction_percent">5</field>
+        </record>
+        
+        <!-- Grade D - Below Average -->
+        <record id="grade_config_d" model="pks.quality.grade.config">
+            <field name="name">Grade D (Below Average)</field>
+            <field name="code">D</field>
+            <field name="sequence">40</field>
+            <field name="moisture_min">30</field>
+            <field name="moisture_max">35</field>
+            <field name="impurities_min">8</field>
+            <field name="impurities_max">12</field>
+            <field name="unripe_min">15</field>
+            <field name="unripe_max">20</field>
+            <field name="rotten_min">5</field>
+            <field name="rotten_max">8</field>
+            <field name="empty_bunches_min">10</field>
+            <field name="empty_bunches_max">15</field>
+            <field name="small_particles_min">15</field>
+            <field name="small_particles_max">20</field>
+            <field name="deduction_percent">8</field>
+        </record>
+        
+        <!-- Grade E - Poor -->
+        <record id="grade_config_e" model="pks.quality.grade.config">
+            <field name="name">Grade E (Poor)</field>
+            <field name="code">E</field>
+            <field name="sequence">50</field>
+            <field name="moisture_min">35</field>
+            <field name="moisture_max">100</field>
+            <field name="impurities_min">12</field>
+            <field name="impurities_max">100</field>
+            <field name="unripe_min">20</field>
+            <field name="unripe_max">100</field>
+            <field name="rotten_min">8</field>
+            <field name="rotten_max">100</field>
+            <field name="empty_bunches_min">15</field>
+            <field name="empty_bunches_max">100</field>
+            <field name="small_particles_min">20</field>
+            <field name="small_particles_max">100</field>
+            <field name="deduction_percent">12</field>
+        </record>
+        
+    </data>
+</odoo>

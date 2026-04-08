@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- ============================================================
+             GROUPS
+        ============================================================ -->
+        
+        <!-- Group: PKS User (Operator) -->
+        <record id="group_pks_user" model="res.groups">
+            <field name="name">PKS User</field>
+            <field name="category_id" ref="base.module_category_manufacturing"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="comment">PKS User - dapat melihat dan mengoperasikan timbangan</field>
+        </record>
+        
+        <!-- Group: PKS Supervisor -->
+        <record id="group_pks_supervisor" model="res.groups">
+            <field name="name">PKS Supervisor</field>
+            <field name="category_id" ref="base.module_category_manufacturing"/>
+            <field name="implied_ids" eval="[(4, ref('group_pks_user'))]"/>
+            <field name="comment">PKS Supervisor - dapat mengapprove LHP dan mengelola quality</field>
+        </record>
+        
+        <!-- Group: PKS Manager -->
+        <record id="group_pks_manager" model="res.groups">
+            <field name="name">PKS Manager</field>
+            <field name="category_id" ref="base.module_category_manufacturing"/>
+            <field name="implied_ids" eval="[(4, ref('group_pks_supervisor'))]"/>
+            <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+            <field name="comment">PKS Manager - akses penuh ke semua fitur PKS</field>
+        </record>
+        
+        <!-- Group: PKS Quality Control -->
+        <record id="group_pks_quality" model="res.groups">
+            <field name="name">PKS Quality Control</field>
+            <field name="category_id" ref="base.module_category_manufacturing"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="comment">PKS Quality Control - mengelola quality control dan grading</field>
+        </record>
+        
+        <!-- Group: PKS Weighbridge Operator -->
+        <record id="group_pks_weighbridge_operator" model="res.groups">
+            <field name="name">PKS Weighbridge Operator</field>
+            <field name="category_id" ref="base.module_category_manufacturing"/>
+            <field name="implied_ids" eval="[(4, ref('group_pks_user'))]"/>
+            <field name="comment">PKS Weighbridge Operator - mengoperasikan timbangan</field>
+        </record>
+        
+        <!-- Group: PKS Supplier Portal -->
+        <record id="group_pks_supplier_portal" model="res.groups">
+            <field name="name">PKS Supplier Portal</field>
+            <field name="category_id" ref="base.module_category_manufacturing"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_portal'))]"/>
+            <field name="comment">PKS Supplier Portal - akses portal untuk supplier</field>
+        </record>
+        
+        <!-- Group: PKS API Access -->
+        <record id="group_pks_api" model="res.groups">
+            <field name="name">PKS API Access</field>
+            <field name="category_id" ref="base.module_category_manufacturing"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="comment">PKS API Access - akses ke REST API</field>
+        </record>
+        
+        <!-- ============================================================
+             RECORD RULES
+        ============================================================ -->
+        
+        <!-- Weighbridge: User hanya bisa melihat timbangan milik supplier mereka -->
+        <record id="rule_weighbridge_supplier_portal" model="ir.rule">
+            <field name="name">Weighbridge: Supplier Portal - Own Supplier Only</field>
+            <field name="model_id" ref="model_pks_weighbridge"/>
+            <field name="domain_force">[('supplier_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_pks_supplier_portal'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        
+        <!-- Weighbridge: User hanya bisa melihat timbangan dari company mereka -->
+        <record id="rule_weighbridge_multi_company" model="ir.rule">
+            <field name="name">Weighbridge: Multi Company</field>
+            <field name="model_id" ref="model_pks_weighbridge"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+        
+        <!-- Supplier: Portal user hanya bisa melihat supplier mereka sendiri -->
+        <record id="rule_supplier_portal_own" model="ir.rule">
+            <field name="name">Supplier: Portal - Own Record Only</field>
+            <field name="model_id" ref="model_pks_supplier"/>
+            <field name="domain_force">[('user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_pks_supplier_portal'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        
+        <!-- Supplier: Internal user bisa melihat semua supplier aktif -->
+        <record id="rule_supplier_internal" model="ir.rule">
+            <field name="name">Supplier: Internal User - All Active</field>
+            <field name="model_id" ref="model_pks_supplier"/>
+            <field name="domain_force">[('active', '=', True)]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+        
+        <!-- Truck: Multi Company -->
+        <record id="rule_truck_multi_company" model="ir.rule">
+            <field name="name">Truck: Multi Company</field>
+            <field name="model_id" ref="model_pks_truck"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+        
+        <!-- Quality: Quality Control group bisa mengelola semua quality -->
+        <record id="rule_quality_qc_full" model="ir.rule">
+            <field name="name">Quality: QC Full Access</field>
+            <field name="model_id" ref="model_pks_quality"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_pks_quality'))]"/>
+        </record>
+        
+        <!-- Quality: User hanya bisa melihat quality dari supplier mereka -->
+        <record id="rule_quality_supplier_portal" model="ir.rule">
+            <field name="name">Quality: Supplier Portal - Own Supplier Only</field>
+            <field name="model_id" ref="model_pks_quality"/>
+            <field name="domain_force">[('supplier_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_pks_supplier_portal'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        
+        <!-- LHP: Manager bisa melihat semua LHP -->
+        <record id="rule_lhp_manager" model="ir.rule">
+            <field name="name">LHP: Manager Full Access</field>
+            <field name="model_id" ref="model_pks_lhp"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_pks_manager'))]"/>
+        </record>
+        
+        <!-- LHP: Supervisor bisa melihat dan mengkonfirmasi LHP -->
+        <record id="rule_lhp_supervisor" model="ir.rule">
+            <field name="name">LHP: Supervisor Access</field>
+            <field name="model_id" ref="model_pks_lhp"/>
+            <field name="domain_force">[('state', 'in', ['draft', 'confirmed', 'approved'])]</field>
+            <field name="groups" eval="[(4, ref('group_pks_supervisor'))]"/>
+        </record>
+        
+        <!-- LHP: User hanya bisa melihat LHP yang sudah selesai -->
+        <record id="rule_lhp_user" model="ir.rule">
+            <field name="name">LHP: User Read Only Done</field>
+            <field name="model_id" ref="model_pks_lhp"/>
+            <field name="domain_force">[('state', '=', 'done')]</field>
+            <field name="groups" eval="[(4, ref('group_pks_user'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        
+        <!-- LHP: Multi Company -->
+        <record id="rule_lhp_multi_company" model="ir.rule">
+            <field name="name">LHP: Multi Company</field>
+            <field name="model_id" ref="model_pks_lhp"/>
+            <field name="domain_force">['|', ('mill_id', '=', False), ('mill_id', 'in', company_ids)]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+        
+        <!-- ============================================================
+             DEFAULT COMPANY RULES
+        ============================================================ -->
+        
+        <record id="rule_weighbridge_company" model="ir.rule">
+            <field name="name">Weighbridge: Company Rule</field>
+            <field name="model_id" ref="model_pks_weighbridge"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        
+        <record id="rule_supplier_company" model="ir.rule">
+            <field name="name">Supplier: Company Rule</field>
+            <field name="model_id" ref="model_pks_supplier"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        
+        <record id="rule_truck_company" model="ir.rule">
+            <field name="name">Truck: Company Rule</field>
+            <field name="model_id" ref="model_pks_truck"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        
+        <record id="rule_quality_company" model="ir.rule">
+            <field name="name">Quality: Company Rule</field>
+            <field name="model_id" ref="model_pks_quality"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        
+    </data>
+</odoo>

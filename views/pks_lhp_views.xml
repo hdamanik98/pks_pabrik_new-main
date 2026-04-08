@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <!-- ============================================================
+             LHP VIEWS
+        ============================================================ -->
+        
+        <!-- Tree View -->
+        <record id="view_pks_lhp_tree" model="ir.ui.view">
+            <field name="name">pks.lhp.tree</field>
+            <field name="model">pks.lhp</field>
+            <field name="arch" type="xml">
+                <tree string="LHP" decoration-muted="state=='cancelled'" decoration-info="state=='confirmed'" decoration-success="state=='done'">
+                    <field name="name"/>
+                    <field name="date"/>
+                    <field name="shift"/>
+                    <field name="tbs_processed"/>
+                    <field name="cpo_produced"/>
+                    <field name="kernel_produced"/>
+                    <field name="oer_percent"/>
+                    <field name="ker_percent"/>
+                    <field name="state" widget="badge" decoration-success="state=='done'" decoration-info="state=='confirmed'" decoration-warning="state=='approved'" decoration-primary="state=='draft'"/>
+                </tree>
+            </field>
+        </record>
+        
+        <!-- Form View -->
+        <record id="view_pks_lhp_form" model="ir.ui.view">
+            <field name="name">pks.lhp.form</field>
+            <field name="model">pks.lhp</field>
+            <field name="arch" type="xml">
+                <form string="LHP">
+                    <header>
+                        <button name="action_confirm" string="Konfirmasi" type="object" class="btn-primary" invisible="state != 'draft'"/>
+                        <button name="action_approve" string="Setujui" type="object" class="btn-success" invisible="state != 'confirmed'" groups="pks_pabrik.group_pks_manager"/>
+                        <button name="action_done" string="Selesai" type="object" class="btn-success" invisible="state != 'approved'"/>
+                        <button name="action_cancel" string="Batalkan" type="object" class="btn-danger" invisible="state in ('done', 'cancelled')"/>
+                        <button name="action_reset_to_draft" string="Reset ke Draft" type="object" class="btn-secondary" invisible="state != 'cancelled'" groups="pks_pabrik.group_pks_manager"/>
+                        <button name="action_import_from_weighbridge" string="Import dari Timbangan" type="object" class="btn-secondary" invisible="state != 'draft'"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,approved,done"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_view_weighbridges" type="object" class="oe_stat_button" icon="fa-truck">
+                                <field name="weighbridge_count" widget="statinfo" string="Timbangan"/>
+                            </button>
+                        </div>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group string="Informasi">
+                                <field name="date"/>
+                                <field name="shift"/>
+                                <field name="mill_id"/>
+                                <field name="supervisor_id"/>
+                            </group>
+                            <group string="Approval">
+                                <field name="confirmed_by" readonly="1"/>
+                                <field name="confirmed_date" readonly="1"/>
+                                <field name="approved_by" readonly="1"/>
+                                <field name="approved_date" readonly="1"/>
+                            </group>
+                        </group>
+                        <group string="TBS (Tandan Buah Segar)">
+                            <group>
+                                <field name="tbs_in_internal"/>
+                                <field name="tbs_in_external"/>
+                                <field name="tbs_in_plasma"/>
+                                <field name="tbs_in_total" readonly="1" class="oe_subtotal_footer_separator"/>
+                            </group>
+                            <group>
+                                <field name="tbs_processed"/>
+                                <field name="tbs_remaining" readonly="1"/>
+                            </group>
+                        </group>
+                        <group string="Output Produk">
+                            <group>
+                                <field name="cpo_produced"/>
+                                <field name="cpo_ffa"/>
+                                <field name="cpo_moisture"/>
+                                <field name="cpo_dirt"/>
+                            </group>
+                            <group>
+                                <field name="kernel_produced"/>
+                                <field name="kernel_moisture"/>
+                                <field name="kernel_dirt"/>
+                            </group>
+                        </group>
+                        <group string="Waste/By-products">
+                            <group>
+                                <field name="fiber_produced"/>
+                                <field name="shell_produced"/>
+                                <field name="empty_bunch_produced"/>
+                                <field name="effluent_produced"/>
+                            </group>
+                        </group>
+                        <group string="OER/KER">
+                            <group>
+                                <field name="oer_percent" readonly="1"/>
+                                <field name="ker_percent" readonly="1"/>
+                                <field name="total_er_percent" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="target_oer"/>
+                                <field name="target_ker"/>
+                                <field name="oer_variance" readonly="1"/>
+                                <field name="ker_variance" readonly="1"/>
+                            </group>
+                        </group>
+                        <group string="Losses">
+                            <group>
+                                <field name="oil_loss_in_fiber"/>
+                                <field name="oil_loss_in_effluent"/>
+                                <field name="total_oil_loss" readonly="1"/>
+                            </group>
+                        </group>
+                        <group string="Performance">
+                            <group>
+                                <field name="throughput_per_hour" readonly="1"/>
+                                <field name="machine_availability"/>
+                                <field name="downtime_hours"/>
+                            </group>
+                            <group>
+                                <field name="downtime_reason"/>
+                            </group>
+                        </group>
+                        <group string="Ringkasan">
+                            <group>
+                                <field name="total_suppliers" readonly="1"/>
+                                <field name="total_trucks" readonly="1"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Detail Supplier">
+                                <field name="weighbridge_ids">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="create_date"/>
+                                        <field name="supplier_id"/>
+                                        <field name="truck_id"/>
+                                        <field name="netto_weight"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Catatan">
+                                <field name="notes"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" groups="base.group_user"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+        
+        <!-- Kanban View -->
+        <record id="view_pks_lhp_kanban" model="ir.ui.view">
+            <field name="name">pks.lhp.kanban</field>
+            <field name="model">pks.lhp</field>
+            <field name="arch" type="xml">
+                <kanban class="o_kanban_mobile">
+                    <field name="name"/>
+                    <field name="date"/>
+                    <field name="shift"/>
+                    <field name="oer_percent"/>
+                    <field name="ker_percent"/>
+                    <field name="state"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div t-attf-class="oe_kanban_global_click">
+                                <div class="o_kanban_record_top">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title">
+                                            <span><t t-esc="record.name.value"/></span>
+                                        </strong>
+                                    </div>
+                                    <span class="float-end">
+                                        <field name="state" widget="label_selection" options="{'classes': {'draft': 'default', 'confirmed': 'info', 'approved': 'warning', 'done': 'success', 'cancelled': 'muted'}}"/>
+                                    </span>
+                                </div>
+                                <div class="o_kanban_record_body">
+                                    <div>Tanggal: <t t-esc="record.date.value"/></div>
+                                    <div>Shift: <t t-esc="record.shift.value"/></div>
+                                    <div>OER: <t t-esc="record.oer_percent.value"/>%</div>
+                                    <div>KER: <t t-esc="record.ker_percent.value"/>%</div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+        
+        <!-- Search View -->
+        <record id="view_pks_lhp_search" model="ir.ui.view">
+            <field name="name">pks.lhp.search</field>
+            <field name="model">pks.lhp</field>
+            <field name="arch" type="xml">
+                <search string="Cari LHP">
+                    <field name="name"/>
+                    <field name="date"/>
+                    <filter name="filter_today" string="Hari Ini" domain="[('date', '=', context_today())]"/>
+                    <filter name="filter_this_week" string="Minggu Ini" domain="[('date', '>=', (context_today() - relativedelta(weeks=1)))]"/>
+                    <filter name="filter_this_month" string="Bulan Ini" domain="[('date', '>=', (context_today() - relativedelta(months=1)))]"/>
+                    <filter name="filter_draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                    <filter name="filter_confirmed" string="Dikonfirmasi" domain="[('state', '=', 'confirmed')]"/>
+                    <filter name="filter_approved" string="Disetujui" domain="[('state', '=', 'approved')]"/>
+                    <filter name="filter_done" string="Selesai" domain="[('state', '=', 'done')]"/>
+                    <filter name="filter_shift1" string="Shift 1" domain="[('shift', '=', '1')]"/>
+                    <filter name="filter_shift2" string="Shift 2" domain="[('shift', '=', '2')]"/>
+                    <filter name="filter_shift3" string="Shift 3" domain="[('shift', '=', '3')]"/>
+                    <filter name="filter_daily" string="Harian" domain="[('shift', '=', 'daily')]"/>
+                    <group expand="0" string="Group By">
+                        <filter name="group_by_state" string="Status" context="{'group_by': 'state'}"/>
+                        <filter name="group_by_shift" string="Shift" context="{'group_by': 'shift'}"/>
+                        <filter name="group_by_date" string="Tanggal" context="{'group_by': 'date'}"/>
+                        <filter name="group_by_mill" string="Pabrik" context="{'group_by': 'mill_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        
+        <!-- Graph View - OER Trend -->
+        <record id="view_pks_lhp_graph_oer" model="ir.ui.view">
+            <field name="name">pks.lhp.graph.oer</field>
+            <field name="model">pks.lhp</field>
+            <field name="arch" type="xml">
+                <graph string="OER Trend" type="line">
+                    <field name="date" interval="day"/>
+                    <field name="oer_percent" type="measure"/>
+                    <field name="target_oer" type="measure"/>
+                </graph>
+            </field>
+        </record>
+        
+        <!-- Graph View - Production -->
+        <record id="view_pks_lhp_graph_production" model="ir.ui.view">
+            <field name="name">pks.lhp.graph.production</field>
+            <field name="model">pks.lhp</field>
+            <field name="arch" type="xml">
+                <graph string="Produksi" type="bar">
+                    <field name="date" interval="day"/>
+                    <field name="cpo_produced" type="measure"/>
+                    <field name="kernel_produced" type="measure"/>
+                    <field name="tbs_processed" type="measure"/>
+                </graph>
+            </field>
+        </record>
+        
+        <!-- Pivot View -->
+        <record id="view_pks_lhp_pivot" model="ir.ui.view">
+            <field name="name">pks.lhp.pivot</field>
+            <field name="model">pks.lhp</field>
+            <field name="arch" type="xml">
+                <pivot string="Analisis LHP">
+                    <field name="date" type="row" interval="day"/>
+                    <field name="shift" type="col"/>
+                    <field name="tbs_processed" type="measure"/>
+                    <field name="cpo_produced" type="measure"/>
+                    <field name="kernel_produced" type="measure"/>
+                    <field name="oer_percent" type="measure"/>
+                    <field name="ker_percent" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+        
+        <!-- Action -->
+        <record id="action_pks_lhp" model="ir.actions.act_window">
+            <field name="name">LHP</field>
+            <field name="res_model">pks.lhp</field>
+            <field name="view_mode">tree,kanban,form,graph,pivot</field>
+            <field name="search_view_id" ref="view_pks_lhp_search"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Buat LHP pertama
+                </p>
+                <p>
+                    LHP (Laporan Harian Pabrik) digunakan untuk mencatat produksi harian pabrik kelapa sawit.
+                </p>
+            </field>
+        </record>
+        
+        <!-- Action OER Dashboard -->
+        <record id="action_pks_lhp_oer_dashboard" model="ir.actions.act_window">
+            <field name="name">OER Dashboard</field>
+            <field name="res_model">pks.lhp</field>
+            <field name="view_mode">graph,tree</field>
+            <field name="view_ids" eval="[(5, 0, 0), (0, 0, {'view_mode': 'graph', 'view_id': ref('view_pks_lhp_graph_oer')})]"/>
+            <field name="domain">[('state', '=', 'done')]</field>
+        </record>
+        
+        <!-- Action Production Dashboard -->
+        <record id="action_pks_lhp_production_dashboard" model="ir.actions.act_window">
+            <field name="name">Production Dashboard</field>
+            <field name="res_model">pks.lhp</field>
+            <field name="view_mode">graph,tree</field>
+            <field name="view_ids" eval="[(5, 0, 0), (0, 0, {'view_mode': 'graph', 'view_id': ref('view_pks_lhp_graph_production')})]"/>
+            <field name="domain">[('state', '=', 'done')]</field>
+        </record>
+        
+    </data>
+</odoo>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <!-- ============================================================
+             DASHBOARD VIEWS
+        ============================================================ -->
+        
+        <!-- Dashboard Action -->
+        <record id="action_pks_dashboard" model="ir.actions.client">
+            <field name="name">Dashboard PKS</field>
+            <field name="tag">pks_dashboard</field>
+        </record>
+        
+        <!-- Dashboard View (using standard Odoo dashboard) -->
+        <record id="view_pks_dashboard_kanban" model="ir.ui.view">
+            <field name="name">pks.dashboard.kanban</field>
+            <field name="model">board.board</field>
+            <field name="arch" type="xml">
+                <form string="Dashboard PKS">
+                    <board style="2-1">
+                        <column>
+                            <action context="{}" name="%(action_pks_lhp_production_dashboard)d" string="Produksi Harian"/>
+                            <action context="{}" name="%(action_pks_lhp_oer_dashboard)d" string="OER Trend"/>
+                        </column>
+                        <column>
+                            <action context="{}" name="%(action_pks_weighbridge)d" string="Timbangan Terbaru"/>
+                            <action context="{}" name="%(action_pks_quality)d" string="Quality Control"/>
+                        </column>
+                    </board>
+                </form>
+            </field>
+        </record>
+        
+        <!-- Alternative Dashboard using standard board -->
+        <record id="action_pks_dashboard_board" model="ir.actions.act_window">
+            <field name="name">Dashboard PKS</field>
+            <field name="res_model">board.board</field>
+            <field name="view_mode">form</field>
+            <field name="usage">menu</field>
+            <field name="view_id" ref="view_pks_dashboard_kanban"/>
+        </record>
+        
+        <!-- Dashboard Stat Cards View -->
+        <record id="view_pks_dashboard_stats" model="ir.ui.view">
+            <field name="name">pks.dashboard.stats</field>
+            <field name="model">pks.weighbridge</field>
+            <field name="arch" type="xml">
+                <kanban class="o_kanban_dashboard o_emphasize_colors">
+                    <field name="state"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <h2>Dashboard PKS - Hari Ini</h2>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+        
+    </data>
+</odoo>

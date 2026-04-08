@@ -1,0 +1,218 @@
+# Docker Compose untuk PKS Pabrik Odoo
+# ====================================
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    container_name: pks_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: odoo
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-odoo_secret_password}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/pgdata
+      - ./backup:/backup
+    ports:
+      - "5432:5432"
+    networks:
+      - pks_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U odoo"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: pks_redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - pks_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Odoo Application
+  odoo:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: pks_odoo
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      HOST: db
+      PORT: 5432
+      USER: odoo
+      PASSWORD: ${DB_PASSWORD:-odoo_secret_password}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    volumes:
+      - odoo_filestore:/var/lib/odoo/filestore
+      - odoo_sessions:/var/lib/odoo/sessions
+      - ../pks_pabrik:/mnt/extra-addons/pks_pabrik:ro
+      - ./logs:/var/log/odoo
+    ports:
+      - "8069:8069"
+      - "8072:8072"  # Live chat / Long polling
+    networks:
+      - pks_network
+    command: >
+      odoo
+      --database=pks_production
+      --init=pks_pabrik
+      --update=pks_pabrik
+      --without-demo=all
+      --load=web,pks_pabrik
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8069/web/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Odoo Cron Worker
+  odoo_cron:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: pks_odoo_cron
+    restart: unless-stopped
+    depends_on:
+      - db
+      - redis
+    environment:
+      HOST: db
+      PORT: 5432
+      USER: odoo
+      PASSWORD: ${DB_PASSWORD:-odoo_secret_password}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    volumes:
+      - odoo_filestore:/var/lib/odoo/filestore
+      - ../pks_pabrik:/mnt/extra-addons/pks_pabrik:ro
+      - ./logs:/var/log/odoo
+    networks:
+      - pks_network
+    command: >
+      odoo
+      --database=pks_production
+      --max-cron-threads=4
+      --no-http
+      --workers=0
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: pks_nginx
+    restart: unless-stopped
+    depends_on:
+      - odoo
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+      - nginx_cache:/var/cache/nginx
+    networks:
+      - pks_network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # PGAdmin (Optional - untuk development)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pks_pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@pks.local}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin123}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - pks_network
+    profiles:
+      - dev
+
+  # Flower - Celery Monitoring (Optional)
+  flower:
+    image: mher/flower:latest
+    container_name: pks_flower
+    restart: unless-stopped
+    environment:
+      CELERY_BROKER_URL: redis://redis:6379/0
+      FLOWER_PORT: 5555
+    ports:
+      - "5555:5555"
+    networks:
+      - pks_network
+    profiles:
+      - monitoring
+
+  # Backup Service
+  backup:
+    image: offen/docker-volume-backup:latest
+    container_name: pks_backup
+    restart: unless-stopped
+    environment:
+      BACKUP_CRON_EXPRESSION: "0 2 * * *"  # Backup setiap jam 2 pagi
+      BACKUP_RETENTION_DAYS: "30"
+      BACKUP_FILENAME: backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_ARCHIVE: /archive
+      BACKUP_STOP_CONTAINER_LABEL: pks.stop-during-backup
+      NOTIFICATION_URLS: ${BACKUP_NOTIFICATION_URL:-}
+    volumes:
+      - postgres_data:/backup/postgres:ro
+      - odoo_filestore:/backup/filestore:ro
+      - ./backups:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - pks_network
+    profiles:
+      - backup
+
+# Networks
+networks:
+  pks_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+# Volumes
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  odoo_filestore:
+    driver: local
+  odoo_sessions:
+    driver: local
+  nginx_cache:
+    driver: local
+  pgadmin_data:
+    driver: local

@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <!-- ============================================================
+             SUPPLIER VIEWS
+        ============================================================ -->
+        
+        <!-- Tree View -->
+        <record id="view_pks_supplier_tree" model="ir.ui.view">
+            <field name="name">pks.supplier.tree</field>
+            <field name="model">pks.supplier</field>
+            <field name="arch" type="xml">
+                <tree string="Supplier" decoration-muted="verification_state=='rejected'" decoration-info="verification_state=='pending'" decoration-success="verification_state=='verified'">
+                    <field name="code"/>
+                    <field name="name"/>
+                    <field name="supplier_type"/>
+                    <field name="phone"/>
+                    <field name="city"/>
+                    <field name="verification_state" widget="badge" decoration-success="verification_state=='verified'" decoration-warning="verification_state=='pending'" decoration-danger="verification_state=='rejected'"/>
+                    <field name="total_deliveries"/>
+                    <field name="total_weight"/>
+                    <field name="average_quality" optional="hide"/>
+                </tree>
+            </field>
+        </record>
+        
+        <!-- Form View -->
+        <record id="view_pks_supplier_form" model="ir.ui.view">
+            <field name="name">pks.supplier.form</field>
+            <field name="model">pks.supplier</field>
+            <field name="arch" type="xml">
+                <form string="Supplier">
+                    <header>
+                        <button name="action_submit_for_verification" string="Ajukan Verifikasi" type="object" class="btn-primary" invisible="verification_state != 'draft'"/>
+                        <button name="action_verify" string="Verifikasi" type="object" class="btn-success" invisible="verification_state != 'pending'" groups="pks_pabrik.group_pks_manager"/>
+                        <button name="action_reject" string="Tolak" type="object" class="btn-danger" invisible="verification_state != 'pending'" groups="pks_pabrik.group_pks_manager"/>
+                        <button name="action_create_portal_user" string="Buat User Portal" type="object" class="btn-secondary" invisible="user_id != False"/>
+                        <field name="verification_state" widget="statusbar" statusbar_visible="draft,pending,verified"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_view_weighbridges" type="object" class="oe_stat_button" icon="fa-truck">
+                                <field name="total_deliveries" widget="statinfo" string="Pengiriman"/>
+                            </button>
+                            <button name="action_view_estates" type="object" class="oe_stat_button" icon="fa-map-marker">
+                                <field name="estate_count" widget="statinfo" string="Kebun"/>
+                            </button>
+                            <button name="%(portal.portal_share_action)d" type="action" class="oe_stat_button" icon="fa-share-alt" invisible="partner_id == False">
+                                <span>Portal</span>
+                            </button>
+                        </div>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="Nama Supplier"/>
+                            </h1>
+                            <h2>
+                                <field name="code" placeholder="Kode Supplier"/>
+                            </h2>
+                        </div>
+                        <group>
+                            <group string="Informasi Umum">
+                                <field name="supplier_type"/>
+                                <field name="active" invisible="1"/>
+                                <field name="phone"/>
+                                <field name="mobile"/>
+                                <field name="email" widget="email"/>
+                                <field name="website" widget="url"/>
+                            </group>
+                            <group string="Dokumen">
+                                <field name="npwp"/>
+                                <field name="nik" invisible="supplier_type != 'individual'"/>
+                                <field name="verified_by" readonly="1"/>
+                                <field name="verified_date" readonly="1"/>
+                                <field name="rejection_reason" readonly="1" invisible="verification_state != 'rejected'"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Alamat">
+                                <group>
+                                    <group>
+                                        <field name="street"/>
+                                        <field name="street2"/>
+                                        <field name="city"/>
+                                        <field name="state_id"/>
+                                        <field name="zip"/>
+                                        <field name="country_id"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Bank">
+                                <group>
+                                    <group>
+                                        <field name="bank_name"/>
+                                        <field name="bank_account"/>
+                                        <field name="bank_account_name"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Kontrak">
+                                <group>
+                                    <group>
+                                        <field name="contract_start"/>
+                                        <field name="contract_end"/>
+                                        <field name="contract_state"/>
+                                    </group>
+                                    <group>
+                                        <field name="price_per_kg"/>
+                                        <field name="currency_id"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Statistik">
+                                <group>
+                                    <group>
+                                        <field name="total_deliveries" readonly="1"/>
+                                        <field name="total_weight" readonly="1"/>
+                                        <field name="average_quality" readonly="1"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Kebun">
+                                <field name="estate_ids">
+                                    <tree editable="bottom">
+                                        <field name="code"/>
+                                        <field name="name"/>
+                                        <field name="location"/>
+                                        <field name="area_hectare"/>
+                                        <field name="planting_year"/>
+                                        <field name="active"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Portal">
+                                <group>
+                                    <group>
+                                        <field name="partner_id" readonly="1"/>
+                                        <field name="user_id" readonly="1"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Catatan">
+                                <field name="notes"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" groups="base.group_user"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+        
+        <!-- Kanban View -->
+        <record id="view_pks_supplier_kanban" model="ir.ui.view">
+            <field name="name">pks.supplier.kanban</field>
+            <field name="model">pks.supplier</field>
+            <field name="arch" type="xml">
+                <kanban class="o_kanban_mobile">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="supplier_type"/>
+                    <field name="verification_state"/>
+                    <field name="total_deliveries"/>
+                    <field name="total_weight"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div t-attf-class="oe_kanban_global_click">
+                                <div class="o_kanban_record_top">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title">
+                                            <span><t t-esc="record.name.value"/></span>
+                                        </strong>
+                                    </div>
+                                    <span class="float-end">
+                                        <field name="verification_state" widget="label_selection" options="{'classes': {'draft': 'default', 'pending': 'warning', 'verified': 'success', 'rejected': 'danger'}}"/>
+                                    </span>
+                                </div>
+                                <div class="o_kanban_record_body">
+                                    <div>Kode: <t t-esc="record.code.value"/></div>
+                                    <div>Tipe: <t t-esc="record.supplier_type.value"/></div>
+                                    <div>Pengiriman: <t t-esc="record.total_deliveries.value"/> | Berat: <t t-esc="record.total_weight.value"/> kg</div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+        
+        <!-- Search View -->
+        <record id="view_pks_supplier_search" model="ir.ui.view">
+            <field name="name">pks.supplier.search</field>
+            <field name="model">pks.supplier</field>
+            <field name="arch" type="xml">
+                <search string="Cari Supplier">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="npwp"/>
+                    <field name="phone"/>
+                    <field name="city"/>
+                    <filter name="filter_verified" string="Terverifikasi" domain="[('verification_state', '=', 'verified')]"/>
+                    <filter name="filter_pending" string="Menunggu Verifikasi" domain="[('verification_state', '=', 'pending')]"/>
+                    <filter name="filter_rejected" string="Ditolak" domain="[('verification_state', '=', 'rejected')]"/>
+                    <filter name="filter_individual" string="Perorangan" domain="[('supplier_type', '=', 'individual')]"/>
+                    <filter name="filter_company" string="Perusahaan" domain="[('supplier_type', '=', 'company')]"/>
+                    <filter name="filter_plasma" string="Plasma" domain="[('supplier_type', '=', 'plasma')]"/>
+                    <group expand="0" string="Group By">
+                        <filter name="group_by_type" string="Tipe" context="{'group_by': 'supplier_type'}"/>
+                        <filter name="group_by_verification" string="Status Verifikasi" context="{'group_by': 'verification_state'}"/>
+                        <filter name="group_by_city" string="Kota" context="{'group_by': 'city'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        
+        <!-- Action -->
+        <record id="action_pks_supplier" model="ir.actions.act_window">
+            <field name="name">Supplier</field>
+            <field name="res_model">pks.supplier</field>
+            <field name="view_mode">tree,kanban,form</field>
+            <field name="search_view_id" ref="view_pks_supplier_search"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Buat supplier pertama Anda
+                </p>
+                <p>
+                    Supplier adalah sumber TBS (Tandan Buah Segar) untuk pabrik.
+                </p>
+            </field>
+        </record>
+        
+    </data>
+</odoo>

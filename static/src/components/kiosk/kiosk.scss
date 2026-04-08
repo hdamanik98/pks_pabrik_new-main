@@ -1,0 +1,311 @@
+/**
+ * Kiosk Weighbridge Styles
+ * ========================
+ * Mobile-responsive styles untuk kiosk timbangan PKS
+ */
+
+// Variables
+$pks-primary: #0066cc;
+$pks-success: #28a745;
+$pks-danger: #dc3545;
+$pks-warning: #ffc107;
+$pks-info: #17a2b8;
+$pks-dark: #343a40;
+$pks-light: #f8f9fa;
+
+// Container
+.pks-kiosk-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+// Header
+.pks-kiosk-header {
+    background: $pks-primary;
+    color: white;
+    padding: 1rem 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    
+    .pks-kiosk-logo {
+        max-height: 60px;
+        filter: brightness(0) invert(1);
+    }
+    
+    .pks-kiosk-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin: 0;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    }
+    
+    .pks-kiosk-clock {
+        font-size: 1.2rem;
+        font-weight: 500;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 0.5rem 1rem;
+        border-radius: 25px;
+    }
+}
+
+// Main Content
+.pks-kiosk-main {
+    flex: 1;
+    padding: 2rem 0;
+    display: flex;
+    align-items: center;
+}
+
+// Card
+.pks-kiosk-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    
+    h2 {
+        color: $pks-dark;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+    }
+}
+
+// RFID Section
+.pks-kiosk-idle {
+    .pks-kiosk-rfid-icon {
+        color: $pks-primary;
+        margin-bottom: 2rem;
+        animation: pulse 2s infinite;
+    }
+    
+    .pks-kiosk-rfid-input {
+        margin: 2rem 0;
+        
+        input {
+            font-size: 2rem;
+            padding: 1rem;
+            border: 3px solid $pks-primary;
+            border-radius: 15px;
+            letter-spacing: 3px;
+            
+            &:focus {
+                box-shadow: 0 0 20px rgba(0, 102, 204, 0.3);
+            }
+        }
+    }
+    
+    .pks-kiosk-scanning {
+        margin: 1.5rem 0;
+    }
+}
+
+// Weight Section
+.pks-kiosk-weight-section {
+    background: $pks-light;
+    padding: 1.5rem;
+    border-radius: 15px;
+    
+    .pks-kiosk-weight-input {
+        font-size: 2.5rem;
+        font-weight: 700;
+        height: auto;
+    }
+    
+    .pks-kiosk-weight-display {
+        h3 {
+            font-size: 3rem;
+            font-weight: 800;
+        }
+    }
+}
+
+// Truck Info
+.pks-kiosk-truck-info {
+    background: $pks-light;
+    padding: 1.5rem;
+    border-radius: 15px;
+    border-left: 5px solid $pks-primary;
+    
+    p {
+        margin-bottom: 0.5rem;
+        font-size: 1.1rem;
+        
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+}
+
+// Confirmation
+.pks-kiosk-confirmation {
+    .pks-kiosk-success-icon {
+        animation: scaleIn 0.5s ease-out;
+    }
+    
+    .pks-kiosk-summary {
+        max-width: 400px;
+        margin: 0 auto;
+        
+        table {
+            font-size: 1.2rem;
+        }
+    }
+}
+
+// Footer
+.pks-kiosk-footer {
+    background: $pks-dark;
+    color: white;
+    padding: 1rem 0;
+    font-size: 0.9rem;
+}
+
+// Animations
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.7;
+        transform: scale(1.1);
+    }
+}
+
+@keyframes scaleIn {
+    0% {
+        opacity: 0;
+        transform: scale(0);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+// Mobile Responsive
+@media (max-width: 768px) {
+    .pks-kiosk-header {
+        .pks-kiosk-title {
+            font-size: 1.2rem;
+        }
+        
+        .pks-kiosk-clock {
+            font-size: 0.9rem;
+            padding: 0.3rem 0.8rem;
+        }
+    }
+    
+    .pks-kiosk-card {
+        padding: 1.5rem;
+        margin: 0 1rem;
+    }
+    
+    .pks-kiosk-weight-section {
+        .pks-kiosk-weight-input {
+            font-size: 1.5rem;
+        }
+        
+        .pks-kiosk-weight-display {
+            h3 {
+                font-size: 2rem;
+            }
+        }
+    }
+    
+    .pks-kiosk-idle {
+        .pks-kiosk-rfid-input {
+            input {
+                font-size: 1.2rem;
+            }
+        }
+    }
+}
+
+// Tablet
+@media (min-width: 769px) and (max-width: 1024px) {
+    .pks-kiosk-card {
+        padding: 2rem;
+    }
+}
+
+// Large Screens
+@media (min-width: 1025px) {
+    .pks-kiosk-card {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+}
+
+// Touch-friendly buttons
+.pks-kiosk-container {
+    .btn-lg {
+        padding: 1rem 2rem;
+        font-size: 1.2rem;
+        border-radius: 10px;
+        
+        &:active {
+            transform: scale(0.98);
+        }
+    }
+}
+
+// Form styling
+.pks-kiosk-container {
+    .form-select-lg,
+    .form-control-lg {
+        padding: 1rem;
+        font-size: 1.1rem;
+        border-radius: 10px;
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: $pks-dark;
+        margin-bottom: 0.5rem;
+    }
+}
+
+// Alert styling
+.pks-kiosk-container {
+    .alert {
+        border-radius: 10px;
+        padding: 1rem 1.5rem;
+        font-size: 1.1rem;
+    }
+}
+
+// Loading spinner
+.pks-kiosk-container {
+    .spinner-border {
+        width: 3rem;
+        height: 3rem;
+    }
+}
+
+// Dark mode support (optional)
+@media (prefers-color-scheme: dark) {
+    .pks-kiosk-container {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        
+        .pks-kiosk-card {
+            background: #2d2d44;
+            color: white;
+            
+            h2 {
+                color: white;
+            }
+        }
+        
+        .pks-kiosk-weight-section,
+        .pks-kiosk-truck-info {
+            background: #1a1a2e;
+        }
+        
+        .form-label {
+            color: white;
+        }
+    }
+}

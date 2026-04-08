@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <!-- ============================================================
+             LHP REPORT
+        ============================================================ -->
+        
+        <!-- Report Definition -->
+        <record id="action_report_lhp" model="ir.actions.report">
+            <field name="name">Laporan LHP</field>
+            <field name="model">pks.lhp</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">pks_pabrik.report_lhp</field>
+            <field name="report_file">pks_pabrik.report_lhp</field>
+            <field name="print_report_name">'LHP - %s' % (object.name)</field>
+            <field name="binding_model_id" ref="model_pks_lhp"/>
+            <field name="binding_type">report</field>
+        </record>
+        
+        <!-- QWeb Template -->
+        <template id="report_lhp">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="web.external_layout">
+                        <div class="page">
+                            <!-- Header -->
+                            <div class="row">
+                                <div class="col-12 text-center">
+                                    <h2>LAPORAN HARIAN PABRIK (LHP)</h2>
+                                    <h3><t t-esc="o.mill_id.name or 'PKS PABRIK'"/></h3>
+                                    <hr/>
+                                </div>
+                            </div>
+                            
+                            <!-- LHP Info -->
+                            <div class="row mt-4">
+                                <div class="col-6">
+                                    <table class="table table-borderless">
+                                        <tr>
+                                            <td><strong>No. LHP</strong></td>
+                                            <td>: <t t-esc="o.name"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Tanggal</strong></td>
+                                            <td>: <t t-esc="o.date.strftime('%d/%m/%Y')"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Shift</strong></td>
+                                            <td>: <t t-esc="o.shift"/></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="col-6">
+                                    <table class="table table-borderless">
+                                        <tr>
+                                            <td><strong>Supervisor</strong></td>
+                                            <td>: <t t-esc="o.supervisor_id.name or '-'"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Status</strong></td>
+                                            <td>: <t t-esc="o.state"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Jumlah Timbangan</strong></td>
+                                            <td>: <t t-esc="o.weighbridge_count"/></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <!-- TBS Input -->
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <h5>INPUT TBS (TANDAN BUAH SEGAR)</h5>
+                                    <table class="table table-bordered">
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th class="text-center">Jenis</th>
+                                                <th class="text-center">Berat (kg)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>TBS Internal</td>
+                                                <td class="text-end"><t t-esc="'{:,.2f}'.format(o.tbs_in_internal)"/></td>
+                                            </tr>
+                                            <tr>
+                                                <td>TBS Eksternal</td>
+                                                <td class="text-end"><t t-esc="'{:,.2f}'.format(o.tbs_in_external)"/></td>
+                                            </tr>
+                                            <tr>
+                                                <td>TBS Plasma</td>
+                                                <td class="text-end"><t t-esc="'{:,.2f}'.format(o.tbs_in_plasma)"/></td>
+                                            </tr>
+                                            <tr class="table-primary">
+                                                <td><strong>TOTAL TBS MASUK</strong></td>
+                                                <td class="text-end"><strong><t t-esc="'{:,.2f}'.format(o.tbs_in_total)"/></strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td>TBS Diolah</td>
+                                                <td class="text-end"><t t-esc="'{:,.2f}'.format(o.tbs_processed)"/></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Sisa TBS</td>
+                                                <td class="text-end"><t t-esc="'{:,.2f}'.format(o.tbs_remaining)"/></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <!-- Output Products -->
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <h5>OUTPUT PRODUK</h5>
+                                    <table class="table table-bordered">
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th class="text-center">Produk</th>
+                                                <th class="text-center">Jumlah (kg)</th>
+                                                <th class="text-center">FFA (%)</th>
+                                                <th class="text-center">Moisture (%)</th>
+                                                <th class="text-center">Dirt (%)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><strong>CPO (Crude Palm Oil)</strong></td>
+                                                <td class="text-end"><t t-esc="'{:,.2f}'.format(o.cpo_produced)"/></td>
+                                                <td class="text-end"><t t-esc="'{:,.2f}'.format(o.cpo_ffa)"/></td>
+                                                <td class="text-end"><t t-esc="'{:,.2f}'.format(o.cpo_moisture)"/></td>
+                                                <td class="text-end"><t t-esc="'{:,.2f}'.format(o.cpo_dirt)"/></td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Kernel (Inti Sawit)</strong></td>
+                                                <td class="text-end"><t t-esc="'{:,.2f}'.format(o.kernel_produced)"/></td>
+                                                <td class="text-center">-</td>
+                                                <td class="text-end"><t t-esc="'{:,.2f}'.format(o.kernel_moisture)"/></td>
+                                                <td class="text-end"><t t-esc="'{:,.2f}'.format(o.kernel_dirt)"/></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <!-- OER/KER -->
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <h5>OER/KER (OIL EXTRACTION RATE / KERNEL EXTRACTION RATE)</h5>
+                                    <table class="table table-bordered">
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th class="text-center">Parameter</th>
+                                                <th class="text-center">Aktual (%)</th>
+                                                <th class="text-center">Target (%)</th>
+                                                <th class="text-center">Variance (%)</th>
+                                                <th class="text-center">Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><strong>OER</strong></td>
+                                                <td class="text-end"><t t-esc="'{:,.2f}'.format(o.oer_percent)"/></td>
+                                                <td class="text-end"><t t-esc="'{:,.2f}'.format(o.target_oer)"/></td>
+                                                <td class="text-end">
+                                                    <span t-attf-class="#{o.oer_variance >= 0 and 'text-success' or 'text-danger'}">
+                                                        <t t-esc="'{:,.2f}'.format(o.oer_variance)"/>
+                                                    </span>
+                                                </td>
+                                                <td class="text-center">
+                                                    <span t-if="o.oer_variance >= 0" class="text-success">✓ Good</span>
+                                                    <span t-if="o.oer_variance < 0" class="text-danger">✗ Need Improvement</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>KER</strong></td>
+                                                <td class="text-end"><t t-esc="'{:,.2f}'.format(o.ker_percent)"/></td>
+                                                <td class="text-end"><t t-esc="'{:,.2f}'.format(o.target_ker)"/></td>
+                                                <td class="text-end">
+                                                    <span t-attf-class="#{o.ker_variance >= 0 and 'text-success' or 'text-danger'}">
+                                                        <t t-esc="'{:,.2f}'.format(o.ker_variance)"/>
+                                                    </span>
+                                                </td>
+                                                <td class="text-center">
+                                                    <span t-if="o.ker_variance >= 0" class="text-success">✓ Good</span>
+                                                    <span t-if="o.ker_variance < 0" class="text-danger">✗ Need Improvement</span>
+                                                </td>
+                                            </tr>
+                                            <tr class="table-info">
+                                                <td><strong>TOTAL ER</strong></td>
+                                                <td class="text-end"><strong><t t-esc="'{:,.2f}'.format(o.total_er_percent)"/></strong></td>
+                                                <td class="text-center">-</td>
+                                                <td class="text-center">-</td>
+                                                <td class="text-center">-</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <!-- Waste/By-products -->
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <h5>WASTE / BY-PRODUCTS</h5>
+                                    <table class="table table-bordered">
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th class="text-center">Jenis</th>
+                                                <th class="text-center">Jumlah (kg)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Fiber</td>
+                                                <td class="text-end"><t t-esc="'{:,.2f}'.format(o.fiber_produced)"/></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Cangkang</td>
+                                                <td class="text-end"><t t-esc="'{:,.2f}'.format(o.shell_produced)"/></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Janjang Kosong</td>
+                                                <td class="text-end"><t t-esc="'{:,.2f}'.format(o.empty_bunch_produced)"/></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Effluent/POME</td>
+                                                <td class="text-end"><t t-esc="'{:,.2f}'.format(o.effluent_produced)"/></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <!-- Losses -->
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <h5>OIL LOSSES</h5>
+                                    <table class="table table-bordered">
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th class="text-center">Parameter</th>
+                                                <th class="text-center">Nilai (%)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Oil Loss in Fiber</td>
+                                                <td class="text-end"><t t-esc="'{:,.2f}'.format(o.oil_loss_in_fiber)"/></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Oil Loss in Effluent</td>
+                                                <td class="text-end"><t t-esc="'{:,.2f}'.format(o.oil_loss_in_effluent)"/></td>
+                                            </tr>
+                                            <tr class="table-warning">
+                                                <td><strong>Total Oil Loss</strong></td>
+                                                <td class="text-end"><strong><t t-esc="'{:,.2f}'.format(o.total_oil_loss)"/></strong></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <!-- Performance -->
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <h5>PERFORMANCE INDICATORS</h5>
+                                    <table class="table table-bordered">
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th class="text-center">Parameter</th>
+                                                <th class="text-center">Nilai</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Throughput (kg/jam)</td>
+                                                <td class="text-end"><t t-esc="'{:,.2f}'.format(o.throughput_per_hour)"/></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Ketersediaan Mesin (%)</td>
+                                                <td class="text-end"><t t-esc="'{:,.2f}'.format(o.machine_availability)"/></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Downtime (jam)</td>
+                                                <td class="text-end"><t t-esc="'{:,.2f}'.format(o.downtime_hours)"/></td>
+                                            </tr>
+                                            <tr t-if="o.downtime_reason">
+                                                <td>Alasan Downtime</td>
+                                                <td><t t-esc="o.downtime_reason"/></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <!-- Summary -->
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <h5>RINGKASAN</h5>
+                                    <table class="table table-bordered">
+                                        <tr>
+                                            <td><strong>Total Supplier</strong></td>
+                                            <td><t t-esc="o.total_suppliers"/></td>
+                                            <td><strong>Total Truk</strong></td>
+                                            <td><t t-esc="o.total_trucks"/></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <!-- Notes -->
+                            <div class="row mt-4" t-if="o.notes">
+                                <div class="col-12">
+                                    <h5>CATATAN</h5>
+                                    <p><t t-esc="o.notes"/></p>
+                                </div>
+                            </div>
+                            
+                            <!-- Signatures -->
+                            <div class="row mt-5">
+                                <div class="col-3 text-center">
+                                    <p>Dibuat Oleh</p>
+                                    <br/><br/><br/>
+                                    <p>(<t t-esc="o.confirmed_by.name if o.confirmed_by else '....................'"/>)</p>
+                                    <p class="small"><t t-esc="o.confirmed_date.strftime('%d/%m/%Y %H:%M') if o.confirmed_date else ''"/></p>
+                                </div>
+                                <div class="col-3 text-center">
+                                    <p>Diperiksa Oleh</p>
+                                    <br/><br/><br/>
+                                    <p>(<t t-esc="o.approved_by.name if o.approved_by else '....................'"/>)</p>
+                                    <p class="small"><t t-esc="o.approved_date.strftime('%d/%m/%Y %H:%M') if o.approved_date else ''"/></p>
+                                </div>
+                                <div class="col-3 text-center">
+                                    <p>Disetujui Oleh</p>
+                                    <br/><br/><br/>
+                                    <p>(....................)</p>
+                                    <p class="small">Manager</p>
+                                </div>
+                                <div class="col-3 text-center">
+                                    <p>Diketahui Oleh</p>
+                                    <br/><br/><br/>
+                                    <p>(....................)</p>
+                                    <p class="small">Direksi</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Footer -->
+                            <div class="row mt-5">
+                                <div class="col-12 text-center">
+                                    <hr/>
+                                    <p class="small">Dokumen ini dicetak dari sistem PKS Pabrik</p>
+                                    <p class="small">Tanggal Cetak: <t t-esc="datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')"/></p>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+        
+    </data>
+</odoo>

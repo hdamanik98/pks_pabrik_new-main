@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <!-- ============================================================
+             QUALITY VIEWS
+        ============================================================ -->
+        
+        <!-- Tree View -->
+        <record id="view_pks_quality_tree" model="ir.ui.view">
+            <field name="name">pks.quality.tree</field>
+            <field name="model">pks.quality</field>
+            <field name="arch" type="xml">
+                <tree string="Quality Control" decoration-muted="state=='cancelled'" decoration-info="state=='in_progress'" decoration-success="state=='done'">
+                    <field name="name"/>
+                    <field name="sample_date"/>
+                    <field name="weighbridge_id"/>
+                    <field name="supplier_id"/>
+                    <field name="final_grade" decoration-success="final_grade=='A'" decoration-info="final_grade=='B'" decoration-warning="final_grade=='C'" decoration-danger="final_grade in ('D', 'E', 'reject')"/>
+                    <field name="grade_score"/>
+                    <field name="deduction_factor"/>
+                    <field name="weight_deduction_kg"/>
+                    <field name="net_weight_after_deduction"/>
+                    <field name="state" widget="badge"/>
+                </tree>
+            </field>
+        </record>
+        
+        <!-- Form View -->
+        <record id="view_pks_quality_form" model="ir.ui.view">
+            <field name="name">pks.quality.form</field>
+            <field name="model">pks.quality</field>
+            <field name="arch" type="xml">
+                <form string="Quality Control">
+                    <header>
+                        <button name="action_start_analysis" string="Mulai Analisa" type="object" class="btn-primary" invisible="state != 'draft'"/>
+                        <button name="action_done" string="Selesai" type="object" class="btn-success" invisible="state != 'in_progress'"/>
+                        <button name="action_cancel" string="Batalkan" type="object" class="btn-danger" invisible="state in ('done', 'cancelled')"/>
+                        <button name="action_reset_to_draft" string="Reset ke Draft" type="object" class="btn-secondary" invisible="state != 'cancelled'" groups="pks_pabrik.group_pks_manager"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,in_progress,done"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group string="Informasi">
+                                <field name="weighbridge_id" options="{'no_create': True}"/>
+                                <field name="supplier_id" readonly="1"/>
+                                <field name="truck_id" readonly="1"/>
+                                <field name="sample_date"/>
+                                <field name="sample_weight"/>
+                            </group>
+                            <group string="Petugas">
+                                <field name="sampler_id" options="{'no_create': True}"/>
+                                <field name="analyst_id" options="{'no_create': True}"/>
+                            </group>
+                        </group>
+                        <group string="Parameter Kualitas">
+                            <group>
+                                <field name="moisture_content"/>
+                                <field name="moisture_grade" readonly="1"/>
+                                <field name="impurities_percent"/>
+                                <field name="impurities_grade" readonly="1"/>
+                                <field name="unripe_percent"/>
+                                <field name="unripe_grade" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="rotten_percent"/>
+                                <field name="rotten_grade" readonly="1"/>
+                                <field name="empty_bunches_percent"/>
+                                <field name="empty_bunches_grade" readonly="1"/>
+                                <field name="small_particles_percent"/>
+                                <field name="small_particles_grade" readonly="1"/>
+                            </group>
+                        </group>
+                        <group string="Hasil Grading">
+                            <group>
+                                <field name="final_grade" readonly="1" class="oe_subtotal_footer_separator"/>
+                                <field name="grade_score" readonly="1"/>
+                                <field name="deduction_factor" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="weight_deduction_kg" readonly="1"/>
+                                <field name="net_weight_after_deduction" readonly="1" class="oe_subtotal_footer_separator"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Foto Sampling">
+                                <field name="photo_ids">
+                                    <tree editable="bottom">
+                                        <field name="sequence" widget="handle"/>
+                                        <field name="name"/>
+                                        <field name="photo_type"/>
+                                        <field name="photo" widget="image" options="{'size': [90, 90]}"/>
+                                        <field name="taken_by"/>
+                                        <field name="taken_date"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Catatan">
+                                <field name="notes"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" groups="base.group_user"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+        
+        <!-- Kanban View -->
+        <record id="view_pks_quality_kanban" model="ir.ui.view">
+            <field name="name">pks.quality.kanban</field>
+            <field name="model">pks.quality</field>
+            <field name="arch" type="xml">
+                <kanban class="o_kanban_mobile" default_group_by="final_grade">
+                    <field name="name"/>
+                    <field name="supplier_id"/>
+                    <field name="final_grade"/>
+                    <field name="grade_score"/>
+                    <field name="deduction_factor"/>
+                    <field name="net_weight_after_deduction"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div t-attf-class="oe_kanban_global_click">
+                                <div class="o_kanban_record_top">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title">
+                                            <span><t t-esc="record.name.value"/></span>
+                                        </strong>
+                                    </div>
+                                    <span class="float-end">
+                                        <span t-attf-class="badge #{record.final_grade.raw_value == 'A' ? 'bg-success' : (record.final_grade.raw_value == 'B' ? 'bg-info' : (record.final_grade.raw_value == 'C' ? 'bg-warning' : 'bg-danger'))}">
+                                            <t t-esc="record.final_grade.value"/>
+                                        </span>
+                                    </span>
+                                </div>
+                                <div class="o_kanban_record_body">
+                                    <div>Supplier: <t t-esc="record.supplier_id.value"/></div>
+                                    <div>Skor: <t t-esc="record.grade_score.value"/></div>
+                                    <div>Potongan: <t t-esc="record.deduction_factor.value"/>%</div>
+                                    <div><strong>Berat Bersih: <t t-esc="record.net_weight_after_deduction.value"/> kg</strong></div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+        
+        <!-- Search View -->
+        <record id="view_pks_quality_search" model="ir.ui.view">
+            <field name="name">pks.quality.search</field>
+            <field name="model">pks.quality</field>
+            <field name="arch" type="xml">
+                <search string="Cari Quality Control">
+                    <field name="name"/>
+                    <field name="weighbridge_id"/>
+                    <field name="supplier_id"/>
+                    <filter name="filter_today" string="Hari Ini" domain="[('sample_date', '>=', context_today().strftime('%Y-%m-%d'))]"/>
+                    <filter name="filter_this_week" string="Minggu Ini" domain="[('sample_date', '>=', (context_today() - relativedelta(weeks=1)).strftime('%Y-%m-%d'))]"/>
+                    <filter name="filter_this_month" string="Bulan Ini" domain="[('sample_date', '>=', (context_today() - relativedelta(months=1)).strftime('%Y-%m-%d'))]"/>
+                    <filter name="filter_draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                    <filter name="filter_in_progress" string="Sedang Analisa" domain="[('state', '=', 'in_progress')]"/>
+                    <filter name="filter_done" string="Selesai" domain="[('state', '=', 'done')]"/>
+                    <filter name="filter_grade_a" string="Grade A" domain="[('final_grade', '=', 'A')]"/>
+                    <filter name="filter_grade_b" string="Grade B" domain="[('final_grade', '=', 'B')]"/>
+                    <filter name="filter_grade_c" string="Grade C" domain="[('final_grade', '=', 'C')]"/>
+                    <filter name="filter_reject" string="Ditolak" domain="[('final_grade', '=', 'reject')]"/>
+                    <group expand="0" string="Group By">
+                        <filter name="group_by_grade" string="Grade" context="{'group_by': 'final_grade'}"/>
+                        <filter name="group_by_supplier" string="Supplier" context="{'group_by': 'supplier_id'}"/>
+                        <filter name="group_by_date" string="Tanggal" context="{'group_by': 'sample_date:day'}"/>
+                        <filter name="group_by_state" string="Status" context="{'group_by': 'state'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        
+        <!-- Graph View -->
+        <record id="view_pks_quality_graph" model="ir.ui.view">
+            <field name="name">pks.quality.graph</field>
+            <field name="model">pks.quality</field>
+            <field name="arch" type="xml">
+                <graph string="Distribusi Grade Quality" type="pie">
+                    <field name="final_grade"/>
+                    <field name="net_weight_after_deduction" type="measure"/>
+                </graph>
+            </field>
+        </record>
+        
+        <!-- Pivot View -->
+        <record id="view_pks_quality_pivot" model="ir.ui.view">
+            <field name="name">pks.quality.pivot</field>
+            <field name="model">pks.quality</field>
+            <field name="arch" type="xml">
+                <pivot string="Analisis Quality">
+                    <field name="sample_date" type="row" interval="day"/>
+                    <field name="supplier_id" type="row"/>
+                    <field name="final_grade" type="col"/>
+                    <field name="net_weight_after_deduction" type="measure"/>
+                    <field name="grade_score" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+        
+        <!-- Action -->
+        <record id="action_pks_quality" model="ir.actions.act_window">
+            <field name="name">Quality Control</field>
+            <field name="res_model">pks.quality</field>
+            <field name="view_mode">tree,kanban,form,graph,pivot</field>
+            <field name="search_view_id" ref="view_pks_quality_search"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Buat analisa quality pertama
+                </p>
+                <p>
+                    Quality control digunakan untuk menganalisa kualitas TBS dan menentukan grade.
+                </p>
+            </field>
+        </record>
+        
+        <!-- ============================================================
+             QUALITY GRADE CONFIG VIEWS
+        ============================================================ -->
+        
+        <record id="view_pks_quality_grade_config_tree" model="ir.ui.view">
+            <field name="name">pks.quality.grade.config.tree</field>
+            <field name="model">pks.quality.grade.config</field>
+            <field name="arch" type="xml">
+                <tree string="Konfigurasi Grade">
+                    <field name="sequence" widget="handle"/>
+                    <field name="code"/>
+                    <field name="name"/>
+                    <field name="moisture_max"/>
+                    <field name="impurities_max"/>
+                    <field name="deduction_percent"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+        
+        <record id="view_pks_quality_grade_config_form" model="ir.ui.view">
+            <field name="name">pks.quality.grade.config.form</field>
+            <field name="model">pks.quality.grade.config</field>
+            <field name="arch" type="xml">
+                <form string="Konfigurasi Grade">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="code"/>
+                                <field name="sequence"/>
+                                <field name="active"/>
+                            </group>
+                            <group>
+                                <field name="deduction_percent"/>
+                            </group>
+                        </group>
+                        <group string="Range Parameter">
+                            <group>
+                                <field name="moisture_min"/>
+                                <field name="moisture_max"/>
+                                <field name="impurities_min"/>
+                                <field name="impurities_max"/>
+                                <field name="unripe_min"/>
+                                <field name="unripe_max"/>
+                            </group>
+                            <group>
+                                <field name="rotten_min"/>
+                                <field name="rotten_max"/>
+                                <field name="empty_bunches_min"/>
+                                <field name="empty_bunches_max"/>
+                                <field name="small_particles_min"/>
+                                <field name="small_particles_max"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="notes"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        
+        <record id="action_pks_quality_grade_config" model="ir.actions.act_window">
+            <field name="name">Konfigurasi Grade</field>
+            <field name="res_model">pks.quality.grade.config</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        
+    </data>
+</odoo>

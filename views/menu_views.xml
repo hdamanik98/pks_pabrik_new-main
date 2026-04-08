@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <!-- ============================================================
+             MENU ITEMS
+        ============================================================ -->
+        
+        <!-- Main Menu -->
+        <menuitem id="menu_pks_root" 
+                  name="PKS Pabrik" 
+                  web_icon="pks_pabrik,static/description/icon.png"
+                  sequence="10"/>
+        
+        <!-- Dashboard Menu -->
+        <menuitem id="menu_pks_dashboard" 
+                  name="Dashboard" 
+                  parent="menu_pks_root" 
+                  action="action_pks_dashboard_board"
+                  sequence="1"/>
+        
+        <!-- Timbangan Menu -->
+        <menuitem id="menu_pks_weighbridge" 
+                  name="Timbangan" 
+                  parent="menu_pks_root" 
+                  sequence="10"/>
+        
+        <menuitem id="menu_pks_weighbridge_transaction" 
+                  name="Transaksi Timbangan" 
+                  parent="menu_pks_weighbridge" 
+                  action="action_pks_weighbridge"
+                  sequence="1"/>
+        
+        <menuitem id="menu_pks_weighbridge_kiosk" 
+                  name="Kiosk Timbangan" 
+                  parent="menu_pks_weighbridge" 
+                  action="action_pks_weighbridge"
+                  sequence="2"/>
+        
+        <!-- Master Data Menu -->
+        <menuitem id="menu_pks_master" 
+                  name="Master Data" 
+                  parent="menu_pks_root" 
+                  sequence="20"/>
+        
+        <menuitem id="menu_pks_supplier" 
+                  name="Supplier" 
+                  parent="menu_pks_master" 
+                  action="action_pks_supplier"
+                  sequence="1"/>
+        
+        <menuitem id="menu_pks_truck" 
+                  name="Truk" 
+                  parent="menu_pks_master" 
+                  action="action_pks_truck"
+                  sequence="2"/>
+        
+        <!-- Quality Menu -->
+        <menuitem id="menu_pks_quality" 
+                  name="Quality Control" 
+                  parent="menu_pks_root" 
+                  sequence="30"/>
+        
+        <menuitem id="menu_pks_quality_analysis" 
+                  name="Analisa Quality" 
+                  parent="menu_pks_quality" 
+                  action="action_pks_quality"
+                  sequence="1"/>
+        
+        <menuitem id="menu_pks_quality_grade_config" 
+                  name="Konfigurasi Grade" 
+                  parent="menu_pks_quality" 
+                  action="action_pks_quality_grade_config"
+                  sequence="2"/>
+        
+        <!-- LHP Menu -->
+        <menuitem id="menu_pks_lhp" 
+                  name="LHP" 
+                  parent="menu_pks_root" 
+                  sequence="40"/>
+        
+        <menuitem id="menu_pks_lhp_daily" 
+                  name="Laporan Harian" 
+                  parent="menu_pks_lhp" 
+                  action="action_pks_lhp"
+                  sequence="1"/>
+        
+        <menuitem id="menu_pks_lhp_oer_dashboard" 
+                  name="OER Dashboard" 
+                  parent="menu_pks_lhp" 
+                  action="action_pks_lhp_oer_dashboard"
+                  sequence="2"/>
+        
+        <menuitem id="menu_pks_lhp_production_dashboard" 
+                  name="Production Dashboard" 
+                  parent="menu_pks_lhp" 
+                  action="action_pks_lhp_production_dashboard"
+                  sequence="3"/>
+        
+        <!-- Reports Menu -->
+        <menuitem id="menu_pks_reports" 
+                  name="Laporan" 
+                  parent="menu_pks_root" 
+                  sequence="50"/>
+        
+        <menuitem id="menu_pks_report_slip_timbang" 
+                  name="Slip Timbang" 
+                  parent="menu_pks_reports" 
+                  action="action_report_slip_timbang"
+                  sequence="1"/>
+        
+        <menuitem id="menu_pks_report_lhp" 
+                  name="Laporan LHP" 
+                  parent="menu_pks_reports" 
+                  action="action_report_lhp"
+                  sequence="2"/>
+        
+        <!-- Configuration Menu -->
+        <menuitem id="menu_pks_config" 
+                  name="Konfigurasi" 
+                  parent="menu_pks_root" 
+                  sequence="100"/>
+        
+        <menuitem id="menu_pks_config_settings" 
+                  name="Pengaturan" 
+                  parent="menu_pks_config" 
+                  action="base.action_general_configuration"
+                  sequence="1"/>
+        
+    </data>
+</odoo>
